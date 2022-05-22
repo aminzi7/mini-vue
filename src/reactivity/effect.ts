@@ -16,16 +16,16 @@ export function track (target, key) {
   // 没有就创建map
   // 有的话直接获取
   // 目的避开了重复收集的问题
-  let depMap = targetMap.get(target)
-  if (!depMap) {
-    depMap = new Map()
+  let depsMap = targetMap.get(target)
+  if (!depsMap) {
+    depsMap = new Map()
     targetMap.set(target, key)
   }
 
-  let dep = depMap.get(key)
+  let dep = depsMap.get(key)
   if (!dep) {
     dep = new Set()
-    depMap.set(key, dep)
+    depsMap.set(key, dep)
   }
 
   dep.add(activeEffect)
