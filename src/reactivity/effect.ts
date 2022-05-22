@@ -1,6 +1,7 @@
 class ReactiveEffect {
   private _fn: any
   deps = []
+  active = true
   constructor (fn, public scheduler?) {
     this._fn = fn
   }
@@ -9,7 +10,11 @@ class ReactiveEffect {
     return this._fn()
   }
   stop () {
-    cleanupEffect(this)
+    // stop 性能优化，每次调用的stop的时候，都会比较频繁
+    if (this.active) {
+      cleanupEffect(this)
+      this.active = false
+    }
   }
 }
 
