@@ -9,10 +9,14 @@ class ReactiveEffect {
     return this._fn()
   }
   stop () {
-    this.deps.forEach((dep: any) => {
-      dep.delete(this)
-    })
+    cleanupEffect(this)
   }
+}
+
+function cleanupEffect (effect) {
+  effect.deps.forEach((dep: any) => {
+    dep.delete(effect)
+  })
 }
 
 const targetMap = new Map()
@@ -48,6 +52,7 @@ export function trigger (target, key) {
     }
   }
 }
+
 let activeEffect
 export function effect (fn, options: any = {}) {
   const scheduler = options.scheduler
