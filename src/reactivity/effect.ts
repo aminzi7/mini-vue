@@ -2,6 +2,7 @@ class ReactiveEffect {
   private _fn: any
   deps = []
   active = true
+  onStop?: () => void
   constructor (fn, public scheduler?) {
     this._fn = fn
   }
@@ -13,6 +14,9 @@ class ReactiveEffect {
     // stop 性能优化，每次调用的stop的时候，都会比较频繁
     if (this.active) {
       cleanupEffect(this)
+      if (this.onStop) {
+        this.onStop()
+      }
       this.active = false
     }
   }
@@ -49,6 +53,7 @@ export function track (target, key) {
 export function trigger (target, key) {
   const depsMap = targetMap.get(target)
   const dep = depsMap.get(key)
+
   for (const effect of dep) {
     if (effect.scheduler) {
       effect.scheduler()
@@ -62,9 +67,13 @@ let activeEffect
 export function effect (fn, options: any = {}) {
   const scheduler = options.scheduler
   const _effect = new ReactiveEffect(fn, scheduler)
+  _effect.onStop = options.onStop
+
   _effect.run()
+
   const runner: any = _effect.run.bind(_effect)
   runner.effect = _effect
+
   return runner
 }
 
