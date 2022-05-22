@@ -1,3 +1,5 @@
+import { extend } from '../shared'
+
 class ReactiveEffect {
   private _fn: any
   deps = []
@@ -67,7 +69,9 @@ let activeEffect
 export function effect (fn, options: any = {}) {
   const scheduler = options.scheduler
   const _effect = new ReactiveEffect(fn, scheduler)
-  _effect.onStop = options.onStop
+  // _effect.onStop = options.onStop
+  // Object.assign(_effect, options)
+  extend(_effect, options)
 
   _effect.run()
 
