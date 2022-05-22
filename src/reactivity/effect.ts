@@ -48,6 +48,9 @@ export function track (target, key) {
     depsMap.set(key, dep)
   }
 
+  // activeEffect 有可能是一个underfine
+  if (!activeEffect) return
+
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
 }
