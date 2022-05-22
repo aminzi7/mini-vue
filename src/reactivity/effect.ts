@@ -19,7 +19,7 @@ export function track (target, key) {
   let depsMap = targetMap.get(target)
   if (!depsMap) {
     depsMap = new Map()
-    targetMap.set(target, key)
+    targetMap.set(target, depsMap)
   }
 
   let dep = depsMap.get(key)
