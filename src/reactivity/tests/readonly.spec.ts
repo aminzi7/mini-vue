@@ -1,4 +1,4 @@
-import { readonly } from '../reactive'
+import { isReadonly, readonly } from '../reactive'
 
 describe('readonly', () => {
   it('happy path', () => {
@@ -19,5 +19,6 @@ describe('readonly', () => {
     user.age = 11
 
     expect(console.warn).toBeCalled()
+    expect(isReadonly(user)).toBe(true)
   })
 })

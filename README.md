@@ -4,5 +4,7 @@
 - [x] 实现 effect 返回 runner
 - [x] 实现 effect.scheduler 功能
 - [x] 实现 effect 的 stop 功能
+- [x] 实现 readonly 功能
+- [x] 实现 isReactive 和 isReadonly 功能
 
 
