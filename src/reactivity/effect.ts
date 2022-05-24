@@ -1,5 +1,9 @@
 import { extend } from '../shared'
 
+// activeEffect 保存的是实例  ReactiveEffect 的this
+let activeEffect
+let shouldTrack
+
 class ReactiveEffect {
   private _fn: any
   deps = []
@@ -9,8 +13,13 @@ class ReactiveEffect {
     this._fn = fn
   }
   run () {
+    // 收集中
+    shouldTrack = true
     activeEffect = this
-    return this._fn()
+    const result = this._fn()
+    // 重置中
+    shouldTrack = false
+    return result
   }
   stop () {
     // stop 性能优化，每次调用的stop的时候，都会比较频繁
@@ -28,10 +37,15 @@ function cleanupEffect (effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
   })
+  effect.deps.length = 0
 }
 
 const targetMap = new Map()
 export function track (target, key) {
+  // activeEffect 有可能是一个underfine
+  if (!isTraking()) return
+  // if (!activeEffect) return
+  // if (!shouldTrack) return
   // target -> key -> dep
   // 没有就创建map
   // 有的话直接获取
@@ -48,11 +62,15 @@ export function track (target, key) {
     depsMap.set(key, dep)
   }
 
-  // activeEffect 有可能是一个underfine
-  if (!activeEffect) return
-
+  // 不重复收集
+  if (dep.has(activeEffect)) return
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
+}
+
+function isTraking () {
+  // return activeEffect && shouldTrack !== undefined
+  return shouldTrack && activeEffect !== undefined
 }
 
 export function trigger (target, key) {
@@ -68,7 +86,6 @@ export function trigger (target, key) {
   }
 }
 
-let activeEffect
 export function effect (fn, options: any = {}) {
   const scheduler = options.scheduler
   const _effect = new ReactiveEffect(fn, scheduler)
