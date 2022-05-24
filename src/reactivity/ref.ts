@@ -6,6 +6,7 @@ class Reflmp {
   private _value: any
   private dep
   private _rawvalue: any
+  private __v_isRef = true
   constructor (value) {
     // {} -> reactive
     this._rawvalue = value
@@ -41,4 +42,28 @@ function trackRefvalue (ref) {
 
 export function ref (value) {
   return new Reflmp(value)
+}
+
+export function isRef (ref) {
+  return !!ref.__v_isRef
+}
+
+export function unRef (ref) {
+  return isRef(ref) ? ref._value : ref
+}
+
+export function proxyRefs (objectWithRefs) {
+  // return isRef(ref) ? ref._value : ref
+  return new Proxy(objectWithRefs, {
+    get (target, key) {
+      return unRef(Reflect.get(target, key))
+    },
+    set (target, key, value) {
+      if (isRef(target[key]) && !isRef(value)) {
+        return (target[key].value = value)
+      } else {
+        return Reflect.set(target, key, value)
+      }
+    }
+  })
 }

@@ -1,10 +1,16 @@
 ## reactivity
 - [x] setup 搭建
-- [x] 实现 effect & reactive & 依赖收集 & 触发依赖
-- [x] 实现 effect 返回 runner
-- [x] 实现 effect.scheduler 功能
-- [x] 实现 effect 的 stop 功能
-- [x] 实现 readonly 功能
-- [x] 实现 isReactive 和 isReadonly 功能
+- [x] effect & reactive & 依赖收集 & 触发依赖
+- [x] effect 返回 runner
+- [x] effect.scheduler 
+- [x] effect 的 stop 
+- [x] readonly 
+- [x] isReactive 和 isReadonly 
+- [x] reactive 和 readonly 嵌套
+- [x] shallowReadonly
+- [x] isProxy
+- [x] ref
+
+
 
 
