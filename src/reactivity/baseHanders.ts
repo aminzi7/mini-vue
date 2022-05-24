@@ -1,5 +1,6 @@
+import { isObject } from '../shared'
 import { track, trigger } from './effect'
-import { ReactiveFlage } from './reactive'
+import { reactive, ReactiveFlage, readonly } from './reactive'
 
 const get = createGetter()
 const set = createSetter()
@@ -8,6 +9,10 @@ const readonlyGet = createGetter(true)
 function createGetter (isReadonly = false) {
   return function get (target, key) {
     const res = Reflect.get(target, key)
+    // 判断是不是一个对象
+    if (isObject(res)) {
+      return isReadonly ? readonly(res) : reactive(res)
+    }
     // 判断isReactive
     if (key === ReactiveFlage.IS_REACTIVE) {
       return !isReadonly
