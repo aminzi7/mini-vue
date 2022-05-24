@@ -21,10 +21,15 @@ export function shallowReadonly (raw) {
   return createReactiveObject(raw, shallowReadonlyHanders)
 }
 
+export function isProxy (val) {
+  return isReactive(val) || isReadonly(val)
+}
+
 function createReactiveObject (raw, baseHanders) {
   return new Proxy(raw, baseHanders)
 }
 
+// 判断
 export function isReactive (value) {
   return !!value[ReactiveFlage.IS_REACTIVE]
 }
