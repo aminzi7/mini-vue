@@ -23,8 +23,8 @@ describe('compited', () => {
     // lazy
     expect(getter).not.toHaveBeenCalled()
 
-    // expect(cValue.value).toBe(1)
-    // expect(getter).toHaveBeenCalledTimes(1)
+    expect(cValue.value).toBe(1)
+    expect(getter).toHaveBeenCalledTimes(1)
 
     // // should not compute again
     // cValue.value // get
