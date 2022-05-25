@@ -2,7 +2,7 @@ import { hasChanged, isObject } from '../shared'
 import { trackEffects, triggerEffects, isTraking } from './effect'
 import { reactive } from './reactive'
 
-class Reflmp {
+class RefImpl {
   private _value: any
   private dep
   private _rawvalue: any
@@ -41,7 +41,7 @@ function trackRefvalue (ref) {
 }
 
 export function ref (value) {
-  return new Reflmp(value)
+  return new RefImpl(value)
 }
 
 export function isRef (ref) {
