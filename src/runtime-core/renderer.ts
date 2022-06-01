@@ -7,6 +7,7 @@ export function render (vnode, container) {
 
 function path (vnode, container) {
   // 判断是不是element
+  // 是element就处理
   processComponent(vnode, container)
 }
 
