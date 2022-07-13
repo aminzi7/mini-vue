@@ -56,8 +56,7 @@ export const mutableHanders = {
 export const readonlyHanders = {
   get: readonlyGet,
   set (target, key, value) {
-    // console.warn(`key:${key} 不可 set target 是readonly`, target)
-    console.warn('ssss')
+    console.warn(`key:${key} 不可 set target 是readonly`, target)
 
     return true
   }
