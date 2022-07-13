@@ -1,6 +1,6 @@
 import { isObject } from '../shared/index'
+import { ShapeFlages } from '../shared/ShapeFlages'
 import { createComponentInstance, setupComponent } from './component'
-import { createVNode } from './vnode'
 
 export function render (vnode, container) {
   // patch 后面的递归
@@ -11,10 +11,11 @@ function patch (vnode, container) {
   // 判断是不是element
   // 是element就处理
   // 区分 element 和 组件
-  if (typeof vnode.type === 'string') {
+  const { shapeFlag } = vnode
+  if (shapeFlag & ShapeFlages.ELEMENT) {
     processElement(vnode, container)
     // isObject 判断对象
-  } else if (isObject(vnode.type)) {
+  } else if (shapeFlag & ShapeFlages.STATEFUL_COMPONENT) {
     processComponent(vnode, container)
   }
 }
@@ -32,11 +33,12 @@ function mountElement (vnode: any, container: any) {
 
   // 相当于 vnode children
   // 有两种类型的值  字符串  和  数组
-  const { children } = vnode
-  if (typeof children === 'string') {
+  const { children, shapeFlag } = vnode
+
+  if (shapeFlag & ShapeFlages.TEXT_CHILDREN) {
     el.textContent = children
     // 判断 数组
-  } else if (Array.isArray(children)) {
+  } else if (shapeFlag & ShapeFlages.ARRAY_CHILDREN) {
     // 其实还是 vnode
     // 所以调用 patch 方法 来遍历对和判断  是 组件类型 还是 元素类型
     mountChildren(vnode, el)
