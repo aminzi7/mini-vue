@@ -2,11 +2,11 @@ import { isObject } from '../shared/index'
 import { createComponentInstance, setupComponent } from './component'
 
 export function render (vnode, container) {
-  // path 后面的递归
-  path(vnode, container)
+  // patch 后面的递归
+  patch(vnode, container)
 }
 
-function path (vnode, container) {
+function patch (vnode, container) {
   // 判断是不是element
   // 是element就处理
   // 区分 element 和 组件
@@ -37,7 +37,7 @@ function mountElement (vnode: any, container: any) {
     // 判断 数组
   } else if (Array.isArray(children)) {
     // 其实还是 vnode
-    // 所以调用 path 方法 来遍历对和判断  是 组件类型 还是 元素类型
+    // 所以调用 patch 方法 来遍历对和判断  是 组件类型 还是 元素类型
     mountChildren(vnode, el)
   }
 
@@ -53,7 +53,7 @@ function mountElement (vnode: any, container: any) {
 
 function mountChildren (vnode, container) {
   vnode.children.forEach(v => {
-    path(v, container)
+    patch(v, container)
   })
 }
 
@@ -71,5 +71,5 @@ function mountComponent (vnode: any, container) {
 function setupRenderEffect (instance, container) {
   const subTree = instance.render()
   // vnode is element -> mountelement
-  path(subTree, container)
+  patch(subTree, container)
 }
