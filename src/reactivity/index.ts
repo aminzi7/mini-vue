@@ -1,4 +1,4 @@
-function fn (a,b){
+function fn (a, b) {
   return a + b
 }
 export default fn
