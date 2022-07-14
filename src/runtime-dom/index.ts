@@ -5,7 +5,7 @@ function createElement (type) {
 }
 
 function patchProp (el, key, val) {
-  const isOn = key => /^on[A-Z]/.test(key)
+  const isOn = (key: string) => /^on[A-Z]/.test(key)
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase()
     el.addEventListener(event, val)

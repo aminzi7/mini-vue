@@ -47,9 +47,10 @@ export function createRenderer (options) {
     container.append(textNode)
   }
 
-  function processFragment (vnode, container, parentComponent) {
+  function processFragment (vnode: any, container: any, parentComponent) {
     mountChildren(vnode, container, parentComponent)
   }
+
   function processElement (vnode: any, container: any, parentComponent) {
     // init -> mount
     // 初始化
@@ -58,13 +59,15 @@ export function createRenderer (options) {
 
   // 初始化
   function mountElement (vnode: any, container: any, parentComponent) {
-    // 相当于 vnode type
+    //canvas
+    // new Element()
     const el = (vnode.el = hostCreateElement(vnode.type))
 
     // 相当于 vnode children
     // 有两种类型的值  字符串  和  数组
     const { children, shapeFlag } = vnode
 
+    // children
     if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
       el.textContent = children
       // 判断 数组
@@ -74,22 +77,17 @@ export function createRenderer (options) {
       mountChildren(vnode, el, parentComponent)
     }
 
-    // 相当于 vnode props  -> 对象
+    // props
     const { props } = vnode
     for (const key in props) {
       const val = props[key]
-      console.log(key)
-      // const isOn = key => /^on[A-Z]/.test(key)
-      // if (isOn(key)) {
-      //   const event = key.slice(2).toLowerCase()
-      //   el.addEventListener(event, val)
-      // } else {
-      //   el.setAttribute(key, val)
-      // }
       hostPatchProp(el, key, val)
     }
+    // canvs
+    // el.x = 10
 
-    // container.append(el)
+    // container.append(el);
+    // addChild()
     hostInsert(el, container)
   }
 
@@ -103,19 +101,20 @@ export function createRenderer (options) {
     mountComponent(vnode, container, parentComponent)
   }
 
-  function mountComponent (initialVnode: any, container, parentComponent) {
-    const instance = createComponentInstance(initialVnode, parentComponent)
+  function mountComponent (initialVNode: any, container, parentComponent) {
+    const instance = createComponentInstance(initialVNode, parentComponent)
 
     setupComponent(instance)
-    setupRenderEffect(instance, initialVnode, container)
+    setupRenderEffect(instance, initialVNode, container)
   }
 
-  function setupRenderEffect (instance: any, vnode, container) {
+  function setupRenderEffect (instance: any, initialVNode, container) {
     const { proxy } = instance
     const subTree = instance.render.call(proxy)
     // vnode is element -> mountelement
     patch(subTree, container, instance)
-    vnode.el = subTree.el
+
+    initialVNode.el = subTree.el
   }
 
   return {

@@ -2,38 +2,38 @@ import { shallowReadonly } from '../reactivity/reactive'
 import { emit } from './componentEmit'
 import { initProps } from './componentProps'
 import { PublicInstanceProxyHandlers } from './componentPublicInstance'
-import { initSolts } from './componentSlots'
+import { initSlots } from './componentSlots'
 
 export function createComponentInstance (vnode, parent) {
-  console.log('createComponentInstance', parent)
-
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
-    emit: () => {},
     slots: {},
     provides: parent ? parent.provides : {},
-    parent
+    parent,
+    emit: () => {}
   }
+
   component.emit = emit.bind(null, component) as any
+
   return component
 }
 
 export function setupComponent (instance) {
   initProps(instance, instance.vnode.props)
-  initSolts(instance, instance.vnode.children)
-  // 处理setup 返回值 函数？ 对象？
+  initSlots(instance, instance.vnode.children)
   setupStatefulComponent(instance)
 }
 
 function setupStatefulComponent (instance: any) {
-  // get state
   const Component = instance.type
-  // ctx
+
   instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers)
+
   const { setup } = Component
+
   if (setup) {
     setCurrentInstance(instance)
     const setupResult = setup(shallowReadonly(instance.props), {
@@ -57,9 +57,6 @@ function handleSetupResult (instance, setupResult: any) {
 function finishComponentSetup (instance: any) {
   const Component = instance.type
 
-  // if (Component.render) {
-  //   instance.render = Component.render
-  // }
   instance.render = Component.render
 }
 

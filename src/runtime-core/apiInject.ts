@@ -7,10 +7,10 @@ export function provide (key, value) {
   if (currentInstance) {
     let { provides } = currentInstance
 
-    const parentPeovides = currentInstance.parent.provides
+    const parentProvides = currentInstance.parent.provides
     // init 改写原型链
-    if (provides === parentPeovides) {
-      provides = currentInstance.provides = Object.create(parentPeovides)
+    if (provides === parentProvides) {
+      provides = currentInstance.provides = Object.create(parentProvides)
     }
 
     provides[key] = value

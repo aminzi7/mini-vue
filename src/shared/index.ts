@@ -1,11 +1,11 @@
 export const extend = Object.assign
 
-export const isObject = val => {
-  return val !== null && typeof val === 'object'
+export const isObject = value => {
+  return value !== null && typeof value === 'object'
 }
 
-export function hasChanged (newValue, value) {
-  return !Object.is(newValue, value)
+export const hasChanged = (val, newValue) => {
+  return !Object.is(val, newValue)
 }
 
 export const hasOwn = (val, key) =>
