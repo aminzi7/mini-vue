@@ -1,8 +1,8 @@
-import { ShapeFlages } from '../shared/ShapeFlages'
+import { ShapeFlags } from '../shared/ShapeFlags'
 
 export function initSolts (instance, children) {
   const { vnode } = instance
-  if (vnode.shapeFlag & ShapeFlages.STATEFUL_COMPONENT) {
+  if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
     normalizeObjectSlots(children, instance.slots)
   }
 }

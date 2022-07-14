@@ -1,4 +1,4 @@
-import { ShapeFlages } from '../shared/ShapeFlages'
+import { ShapeFlags } from '../shared/ShapeFlags'
 
 export const Fragment = Symbol('Fragment')
 export const Text = Symbol('Text')
@@ -8,20 +8,20 @@ export function createVNode (type, props?, children?) {
     type,
     props,
     children,
-    shapeFlag: getShapeFlages(type),
+    shapeFlag: getShapeFlags(type),
     el: null
   }
 
   // children
   if (typeof children === 'string') {
-    vnode.shapeFlag |= ShapeFlages.TEXT_CHILDREN
+    vnode.shapeFlag |= ShapeFlags.TEXT_CHILDREN
   } else if (Array.isArray(children)) {
-    vnode.shapeFlag |= ShapeFlages.ARRAY_CHILDREN
+    vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN
   }
 
-  if (vnode.shapeFlag & ShapeFlages.STATEFUL_COMPONENT) {
+  if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
     if (typeof children === 'object') {
-      vnode.shapeFlag |= ShapeFlages.SLOT_CHILDREN
+      vnode.shapeFlag |= ShapeFlags.SLOT_CHILDREN
     }
   }
 
@@ -32,8 +32,8 @@ export function createTextVNode (text: string) {
   return createVNode(Text, {}, text)
 }
 
-function getShapeFlages (type: any) {
+function getShapeFlags (type: any) {
   return typeof type === 'string'
-    ? ShapeFlages.ELEMENT
-    : ShapeFlages.STATEFUL_COMPONENT
+    ? ShapeFlags.ELEMENT
+    : ShapeFlags.STATEFUL_COMPONENT
 }

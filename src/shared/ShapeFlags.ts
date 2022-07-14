@@ -1,4 +1,4 @@
-export const enum ShapeFlages {
+export const enum ShapeFlags {
   ELEMENT = 1, // 00001
   STATEFUL_COMPONENT = 1 << 1, //0010
   TEXT_CHILDREN = 1 << 2, // 0100
