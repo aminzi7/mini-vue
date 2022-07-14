@@ -1,7 +1,7 @@
 import { computed } from '../computed'
 import { reactive } from '../reactive'
 
-describe('compited', () => {
+describe('computed', () => {
   it('happy path', () => {
     const user = reactive({
       age: 1

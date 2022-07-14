@@ -1,28 +1,28 @@
 import { hasChanged, isObject } from '../shared'
-import { trackEffects, triggerEffects, isTraking } from './effect'
+import { trackEffects, triggerEffects, isTracking } from './effect'
 import { reactive } from './reactive'
 
 class RefImpl {
   private _value: any
-  private dep
-  private _rawvalue: any
-  private __v_isRef = true
+  public dep
+  private _rawValue: any
+  public __v_isRef = true
   constructor (value) {
     // {} -> reactive
-    this._rawvalue = value
+    this._rawValue = value
     this._value = convert(value)
 
     this.dep = new Set()
   }
   get value () {
-    trackRefvalue(this)
+    trackRefValue(this)
 
     return this._value
   }
   set value (newValue) {
     // 对比
-    if (hasChanged(newValue, this._value)) {
-      this._rawvalue = newValue
+    if (hasChanged(newValue, this._rawValue)) {
+      this._rawValue = newValue
       this._value = convert(newValue)
 
       triggerEffects(this.dep)
@@ -34,8 +34,8 @@ function convert (value) {
   return isObject(value) ? reactive(value) : value
 }
 
-function trackRefvalue (ref) {
-  if (isTraking()) {
+function trackRefValue (ref) {
+  if (isTracking()) {
     trackEffects(ref.dep)
   }
 }
@@ -49,7 +49,7 @@ export function isRef (ref) {
 }
 
 export function unRef (ref) {
-  return isRef(ref) ? ref._value : ref
+  return isRef(ref) ? ref.value : ref
 }
 
 export function proxyRefs (objectWithRefs) {

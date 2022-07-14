@@ -6,7 +6,7 @@ describe('shallowReadonly', () => {
     expect(isReadonly(props)).toBe(true)
     expect(isReadonly(props.n)).toBe(false)
   })
-  it('warn then call set', () => {
+  it('should call console.warn when set', () => {
     console.warn = jest.fn()
 
     const user = shallowReadonly({
@@ -14,8 +14,6 @@ describe('shallowReadonly', () => {
     })
 
     user.age = 11
-
-    expect(console.warn).toBeCalled()
-    expect(isReadonly(user)).toBe(true)
+    expect(console.warn).toHaveBeenCalled()
   })
 })

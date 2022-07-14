@@ -2,24 +2,32 @@ import { extend } from '../shared'
 
 // activeEffect 保存的是实例  ReactiveEffect 的this
 let activeEffect
-let shouldTrack
-
+let shouldTrack = false
 export class ReactiveEffect {
   private _fn: any
   deps = []
   active = true
   onStop?: () => void
-  constructor (fn, public scheduler?) {
+  public scheduler: Function | undefined
+  constructor (fn, scheduler?: Function) {
     this._fn = fn
+    this.scheduler = scheduler
   }
   run () {
     // 收集中
+    if (!this.active) {
+      return this._fn()
+    }
+
+    // 应该收集
     shouldTrack = true
     activeEffect = this
-    const result = this._fn()
+    const r = this._fn()
     // 重置中
+    // 重置
     shouldTrack = false
-    return result
+
+    return r
   }
   stop () {
     // stop 性能优化，每次调用的stop的时候，都会比较频繁
@@ -37,13 +45,15 @@ function cleanupEffect (effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
   })
+
+  // 把 effect.deps 清空
   effect.deps.length = 0
 }
 
 const targetMap = new Map()
 export function track (target, key) {
   // activeEffect 有可能是一个underfine
-  if (!isTraking()) return
+  if (!isTracking()) return
   // target -> key -> dep
   // 没有就创建map
   // 有的话直接获取
@@ -65,19 +75,20 @@ export function track (target, key) {
 }
 
 export function trackEffects (dep) {
+  // 看看 dep 之前有没有添加过，添加过的话 那么就不添加了
   if (dep.has(activeEffect)) return
+
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
 }
 
-export function isTraking () {
+export function isTracking () {
   return shouldTrack && activeEffect !== undefined
 }
 
 export function trigger (target, key) {
-  const depsMap = targetMap.get(target)
-  const dep = depsMap.get(key)
-
+  let depsMap = targetMap.get(target)
+  let dep = depsMap.get(key)
   triggerEffects(dep)
 }
 
@@ -92,8 +103,8 @@ export function triggerEffects (dep) {
 }
 
 export function effect (fn, options: any = {}) {
-  const scheduler = options.scheduler
-  const _effect = new ReactiveEffect(fn, scheduler)
+  // fn
+  const _effect = new ReactiveEffect(fn, options.scheduler)
   // _effect.onStop = options.onStop
   // Object.assign(_effect, options)
   extend(_effect, options)
