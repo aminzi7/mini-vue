@@ -1,6 +1,7 @@
 import { isObject } from '../shared/index'
 import { ShapeFlages } from '../shared/ShapeFlages'
 import { createComponentInstance, setupComponent } from './component'
+import { Fragment, Text } from './vnode'
 
 export function render (vnode, container) {
   // patch 后面的递归
@@ -11,15 +12,36 @@ function patch (vnode, container) {
   // 判断是不是element
   // 是element就处理
   // 区分 element 和 组件
-  const { shapeFlag } = vnode
-  if (shapeFlag & ShapeFlages.ELEMENT) {
-    processElement(vnode, container)
-    // isObject 判断对象
-  } else if (shapeFlag & ShapeFlages.STATEFUL_COMPONENT) {
-    processComponent(vnode, container)
+  const { type, shapeFlag } = vnode
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container)
+      break
+
+    case Text:
+      processText(vnode, container)
+      break
+
+    default:
+      if (shapeFlag & ShapeFlages.ELEMENT) {
+        processElement(vnode, container)
+        // isObject 判断对象
+      } else if (shapeFlag & ShapeFlages.STATEFUL_COMPONENT) {
+        processComponent(vnode, container)
+      }
+      break
   }
 }
 
+function processText (vnode: any, container: any) {
+  const { children } = vnode
+  const textNode = (vnode.el = document.createTextNode(children))
+  container.append(textNode)
+}
+
+function processFragment (vnode, container) {
+  mountChildren(vnode, container)
+}
 function processElement (vnode: any, container: any) {
   // init -> mount
   // 初始化
