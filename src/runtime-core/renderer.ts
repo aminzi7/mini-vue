@@ -5,17 +5,17 @@ import { Fragment, Text } from './vnode'
 
 export function render (vnode, container) {
   // patch 后面的递归
-  patch(vnode, container)
+  patch(vnode, container, null)
 }
 
-function patch (vnode, container) {
+function patch (vnode, container, parentComponent) {
   // 判断是不是element
   // 是element就处理
   // 区分 element 和 组件
   const { type, shapeFlag } = vnode
   switch (type) {
     case Fragment:
-      processFragment(vnode, container)
+      processFragment(vnode, container, parentComponent)
       break
 
     case Text:
@@ -24,10 +24,10 @@ function patch (vnode, container) {
 
     default:
       if (shapeFlag & ShapeFlages.ELEMENT) {
-        processElement(vnode, container)
+        processElement(vnode, container, parentComponent)
         // isObject 判断对象
       } else if (shapeFlag & ShapeFlages.STATEFUL_COMPONENT) {
-        processComponent(vnode, container)
+        processComponent(vnode, container, parentComponent)
       }
       break
   }
@@ -39,17 +39,17 @@ function processText (vnode: any, container: any) {
   container.append(textNode)
 }
 
-function processFragment (vnode, container) {
-  mountChildren(vnode, container)
+function processFragment (vnode, container, parentComponent) {
+  mountChildren(vnode, container, parentComponent)
 }
-function processElement (vnode: any, container: any) {
+function processElement (vnode: any, container: any, parentComponent) {
   // init -> mount
   // 初始化
-  mountElement(vnode, container)
+  mountElement(vnode, container, parentComponent)
 }
 
 // 初始化
-function mountElement (vnode: any, container: any) {
+function mountElement (vnode: any, container: any, parentComponent) {
   // 相当于 vnode type
   const el = (vnode.el = document.createElement(vnode.type))
 
@@ -63,7 +63,7 @@ function mountElement (vnode: any, container: any) {
   } else if (shapeFlag & ShapeFlages.ARRAY_CHILDREN) {
     // 其实还是 vnode
     // 所以调用 patch 方法 来遍历对和判断  是 组件类型 还是 元素类型
-    mountChildren(vnode, el)
+    mountChildren(vnode, el, parentComponent)
   }
 
   // 相当于 vnode props  -> 对象
@@ -83,18 +83,18 @@ function mountElement (vnode: any, container: any) {
   container.append(el)
 }
 
-function mountChildren (vnode, container) {
+function mountChildren (vnode, container, parentComponent) {
   vnode.children.forEach(v => {
-    patch(v, container)
+    patch(v, container, parentComponent)
   })
 }
 
-function processComponent (vnode: any, container: any) {
-  mountComponent(vnode, container)
+function processComponent (vnode: any, container: any, parentComponent) {
+  mountComponent(vnode, container, parentComponent)
 }
 
-function mountComponent (initialVnode: any, container) {
-  const instance = createComponentInstance(initialVnode)
+function mountComponent (initialVnode: any, container, parentComponent) {
+  const instance = createComponentInstance(initialVnode, parentComponent)
 
   setupComponent(instance)
   setupRenderEffect(instance, initialVnode, container)
@@ -104,6 +104,6 @@ function setupRenderEffect (instance: any, vnode, container) {
   const { proxy } = instance
   const subTree = instance.render.call(proxy)
   // vnode is element -> mountelement
-  patch(subTree, container)
+  patch(subTree, container, instance)
   vnode.el = subTree.el
 }
