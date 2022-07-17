@@ -15,22 +15,18 @@ export function createRenderer (options) {
   } = options
 
   function render (vnode, container) {
-    // patch 后面的递归
     patch(null, vnode, container, null, null)
   }
 
   // n1 旧
   // n2 新
   function patch (n1, n2, container, parentComponent, anchor) {
-    // 判断是不是element
-    // 是element就处理
-    // 区分 element 和 组件
     const { type, shapeFlag } = n2
+
     switch (type) {
       case Fragment:
         processFragment(n1, n2, container, parentComponent, anchor)
         break
-
       case Text:
         processText(n1, n2, container)
         break
@@ -38,7 +34,6 @@ export function createRenderer (options) {
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
           processElement(n1, n2, container, parentComponent, anchor)
-          // isObject 判断对象
         } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
           processComponent(n1, n2, container, parentComponent, anchor)
         }
@@ -63,7 +58,6 @@ export function createRenderer (options) {
   }
 
   function processElement (
-    // init -> mount
     // 初始化
     n1,
     n2: any,
@@ -174,6 +168,47 @@ export function createRenderer (options) {
         i++
       }
     } else {
+      // 中间对比
+      let s1 = i
+      let s2 = i
+
+      const toBePatched = e2 - s2 + 1
+      let patched = 0
+      const keyToNewIndexMap = new Map()
+
+      for (let i = s2; i <= e2; i++) {
+        const nextChild = c2[i]
+        keyToNewIndexMap.set(nextChild.key, i)
+      }
+
+      for (let i = s1; i <= e1; i++) {
+        const prevChild = c1[i]
+
+        if (patched >= toBePatched) {
+          hostRemove(prevChild.el)
+          continue
+        }
+
+        let newIndex
+        if (prevChild.key != null) {
+          newIndex = keyToNewIndexMap.get(prevChild.key)
+        } else {
+          for (let j = s2; j < e2; j++) {
+            if (isSomeVNodeType(prevChild, c2[j])) {
+              newIndex = j
+
+              break
+            }
+          }
+        }
+
+        if (newIndex === undefined) {
+          hostRemove(prevChild.el)
+        } else {
+          patch(prevChild, c2[newIndex], container, parentComponent, null)
+          patched++
+        }
+      }
     }
   }
 
