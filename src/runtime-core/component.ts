@@ -9,6 +9,7 @@ export function createComponentInstance (vnode, parent) {
   const component = {
     vnode,
     type: vnode.type,
+    next: null,
     setupState: {},
     props: {},
     slots: {},
@@ -49,7 +50,6 @@ function setupStatefulComponent (instance: any) {
 }
 
 function handleSetupResult (instance, setupResult: any) {
-  // 先对象
   if (typeof setupResult === 'object') {
     instance.setupState = proxyRefs(setupResult)
   }
